@@ -1,17 +1,20 @@
-const int len=200;
-class Hugeint
-{
-	public:
-		Hugeint(int R);
-		Hugeint(){}
-		Hugeint operator +(Hugeint &R);
-		    
-		Print();
+#include <iostream>
+#include <string>
+using namespace std;
 
-			 
-		int Len(){return m_len;}
+class HugeInt
+{
+	friend ostream &operator<<( ostream &, const HugeInt & );
+	public:
+	static const int digits = 30; 
+
+	HugeInt( long = 0 ); 
+	HugeInt( const string & ); 
+
+	HugeInt operator+( const HugeInt & ) const;
+
+	HugeInt operator+( int ) const;
+	HugeInt operator+( const string & ) const;
 	private:
-		int m_sign;    
-		int m_len;
-		int m_num;
+	short integer[ digits ];
 };

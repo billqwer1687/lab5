@@ -1,89 +1,73 @@
-#include "HugeInt.h"
-#include <iostream>
-#include <cmath>
+#include <cctype> 
+#include "Hugeint.h" 
 using namespace std;
 
-HugeInt::Print()
+
+HugeInt::HugeInt( long value )
+{
+
+	for ( int i = 0; i < digits; ++i )
+		integer[ i ] = 0;
+
+
+	for ( int j = digits - 1; value != 0 && j >= 0; j-- )
+	{
+		integer[ j ] = value % 10;
+		value /= 10;
+	} 
+} 
+HugeInt::HugeInt( const string &number )
+{
+
+	for ( int i = 0; i < digits; ++i )
+		integer[ i ] = 0;
+	int length = number.size();
+
+	for ( int j = digits - length, k = 0; j < digits; ++j, ++k )
+		if ( isdigit( number[ k ] ) ) 
+			integer[ j ] = number[ k ] - '0';
+} 
+HugeInt HugeInt::operator+( const HugeInt &op2 ) const
+{
+	HugeInt temp; 
+	int carry = 0;
+
+	for ( int i = digits - 1; i >= 0; i-- )
+	{
+		temp.integer[ i ] = integer[ i ] + op2.integer[ i ] + carry;
+
+		if ( temp.integer[ i ] > 9 )
+		{
+			temp.integer[ i ] %= 10; 
+			carry = 1;
+		} 
+		else 
+			carry = 0;
+	} 
+
+	return temp; 
+}
+HugeInt HugeInt::operator+( int op2 ) const
+{
+	return *this + HugeInt( op2 );
+} 
+HugeInt HugeInt::operator+( const string &op2 ) const
+{
+
+	return *this + HugeInt( op2 );
+} 
+ostream& operator<<( ostream &output, const HugeInt &num )
 {
 	int i;
-	for(i=m_len;i!=0;i--)
-		cout<<m_num[i]+0;
-	cout<<endl;
-}
 
-HugeInt::HugeInt(int R)
-{
-	if(R!=0)
-	{
-		if(R>0)
-			m_sign=1;
-		else
-			m_sign=-1;
-		int i=0,k=1;
-		int abs_R=abs(R);
-		do
-		{
-			i++;
-			m_num[i]=abs_R%10;
-			abs_R/=10;
-		}while(abs_R);
-		m_len=i;
-	}
-	else
-	{
-		m_num[1]=0;
-		m_len=1;
-		m_sign=0;
-	}
-}
+	for ( i = 0; ( num.integer[ i ] == 0 ) && ( i <= HugeInt::digits ); ++i )
+		; 
 
-HugeInt HugeInt::operator +(HugeInt &R)
-{
-	HugeInt Result(0);
-	char *p,*q,*r;
-	p=q=r=NULL;
-	int len1,len2;
-	if(Len()>R.Len())
-	{
-		p=this->m_num;
-		q=R.m_num;
-		r=Result.m_num;
-		len1=Len();
-		len2=R.Len();
-	}
+	if ( i == HugeInt::digits )
+		output << 0;
 	else
-	{
-		p=R.m_num;
-		q=this->m_num;
-		r=Result.m_num;
-		len1=R.Len();
-		len2=Len();
-	}
-	int i=1,j=1,k=1,carry=0;
+		for ( ; i < HugeInt::digits; ++i )
+			output << num.integer[ i ];
 
-	while(j<=len2)
-	{
-		r[k]=p[i++]+q[j++]+carry;
-		carry=r[k]/10;
-		r[k]%=10;
-		k++;
-	}
-	while(i<=len1)
-	{
-		r[k]=p[i++]+carry;
-		carry=r[k]/10;
-		r[k]%=10;
-		k++;
-	}
-	if(carry>0)
-	{
-		r[k]=carry;
-		Result.m_len=k;
-	}
-	else
-	{
-		Result.m_len=k-1;
-	}
-	Result.m_sign=1;
-	return Result;
-}
+	return output;
+} 
